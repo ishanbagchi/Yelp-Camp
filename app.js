@@ -3,7 +3,9 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost/yelpcamp");
+mongoose.connect("mongodb://localhost:27017/yelpcamp", 
+				 {useNewUrlParser: true, 
+				  useUnifiedTopology: true});
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
