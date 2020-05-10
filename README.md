@@ -11,5 +11,6 @@
 * find
 * update
 * remove
+* drop
 
 > Create Remove Update Delete
