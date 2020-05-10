@@ -6,6 +6,7 @@
 * help
 * show dbs
 * use
+* collections
 * insert
 * find
 * update

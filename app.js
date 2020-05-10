@@ -1,22 +1,46 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
+mongoose.connect("mongodb://localhost/yelpcamp");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
-var campgrounds = [
-    {name: "Chamurchi", image: "https://pixabay.com/get/50e9d4474856b10ff3d8992ccf2934771438dbf852547940752c7cd49f45_340.jpg"},
-    {name: "Gorumara", image: "https://pixabay.com/get/57e8d1454b56ae14f1dc84609620367d1c3ed9e04e5074417c2f78d39745cd_340.jpg"},
-    {name: "Nathua", image: "https://pixabay.com/get/57e1d14a4e52ae14f1dc84609620367d1c3ed9e04e5074417c2f78d39745cd_340.jpg"}
-]
+//SCHEMA SETUP
+var campgroundSchema = new mongoose.Schema({
+	name: String,
+	image: String
+});
+
+var Campground = mongoose.model("campground", campgroundSchema);
+
+// Campground.create({
+// 	name: "Gorumara", 
+// 	image: "https://images.unsplash.com/photo-1532339142463-fd0a8979791a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+// }, function(err, campground){
+// 	if(err) {
+// 		console.log(err);
+// 	} else {
+// 		console.log(campground);
+// 	}
+// });
 
 app.get("/", function(req, res){
     res.render("landing");
 });
 
 app.get("/campgrounds", function(req, res){
-    res.render("campgrounds", {campgrounds: campgrounds});
+    // Get all campgroundsfrom DB
+	Campground.find({}, function(err, allCampgrounds){
+		if(err){
+			console.log(err);
+		} else {
+			res.render("campgrounds", {campgrounds: allCampgrounds})
+		}
+	});
+	
+	//res.render("campgrounds", {campgrounds: campgrounds});
 });
 
 app.post("/campgrounds", function(req, res){
@@ -24,9 +48,16 @@ app.post("/campgrounds", function(req, res){
     var name = req.body.name;
     var image = req.body.image;
     var newCampground = {name: name, image: image};
-    campgrounds.push(newCampground);
+	//Create a new campground and save to database
+    Campground.create(newCampground, function(err, campground){
+		if(err) {
+			console.log(err, newlyCreated);
+		} else {
+			res.redirect("/campgrounds");
+		}
+	});
     //redirect back to campgrounds page
-    res.redirect("/campgrounds");
+    // res.redirect("/campgrounds");
 });
 
 app.get("/campgrounds/new", function(req, res){
